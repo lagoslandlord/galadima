@@ -145,7 +145,7 @@ export default function DepartmentsPage() {
                 {departments.map((dept) => (
                   <tr key={dept._id}>
                     <td>
-                      <Link href={`/departments/${dept._id}`} style={{ fontWeight: 600, color: "var(--color-neutral-900)" }}>
+                     <Link href={`/departments/${dept._id}`} style={{ fontWeight: 600, color: "var(--color-info)" }}>
                         {dept.name}
                       </Link>
                     </td>

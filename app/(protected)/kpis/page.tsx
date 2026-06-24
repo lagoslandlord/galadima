@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useAuth } from "@/providers/AuthProvider";
@@ -89,6 +90,7 @@ export default function KpisPage() {
 }
 
 function KPIsTab({ canManage }: { canManage: boolean }) {
+  const router = useRouter();
   const [kpis, setKpis] = useState<KpiListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
@@ -145,8 +147,8 @@ function KPIsTab({ canManage }: { canManage: boolean }) {
               <thead><tr><th>KPI</th><th>Employee</th><th>Department</th><th>Status</th><th>Achievement</th><th>Due</th></tr></thead>
               <tbody>
                 {kpis.map((kpi) => (
-                  <tr key={kpi._id}>
-                    <td><Link href={`/kpis/${kpi._id}`} style={{ fontWeight: 600, color: "var(--color-neutral-900)" }}>{kpi.name}</Link></td>
+                  <tr key={kpi._id} onClick={() => router.push(`/kpis/${kpi._id}`)} style={{ cursor: "pointer" }}>
+                    <td style={{ fontWeight: 600, color: "var(--color-info)" }}>{kpi.name}</td>
                     <td>{kpi.employee?.name}</td>
                     <td>{kpi.department}</td>
                     <td><StatusBadge status={kpi.isOverdue ? "overdue" : kpi.status} /></td>

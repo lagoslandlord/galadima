@@ -107,7 +107,7 @@ export default function KpiDetailPage() {
   if (loading) return <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}><span className="spinner" /></div>;
   if (!kpi) return <EmptyState title="KPI not found" text="It may have been deleted." />;
 
-  const isOwner = kpi.employee._id === user.id;
+ const isOwner = String(kpi.employee._id) === String(user.id);
   const isOwnDeptHead = user.role === "department_head" && kpi.department === user.department;
   const isPrivileged = user.role === "super_admin" || user.role === "hr_admin";
   const canManage = isOwnDeptHead || isPrivileged;

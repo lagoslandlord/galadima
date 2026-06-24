@@ -14,9 +14,9 @@ interface WebhookPayload {
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
-  const signature = req.headers.get("x-freshworks-signature");
+  const providedSecret = req.headers.get("x-webhook-secret");
 
-  const verification = verifyWebhookSignature(rawBody, signature);
+  const verification = verifyWebhookSignature(rawBody, providedSecret);
   if (!verification.ok) {
     return NextResponse.json({ success: false, error: verification.reason }, { status: 401 });
   }

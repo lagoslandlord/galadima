@@ -17,8 +17,9 @@ export const DEPARTMENTS = [
   "Security",
   "Procurement",
   "Facilities",
-  "Support",
+"Support",
   "Administration",
+  "Video Production",
 ] as const;
 
 export type DepartmentName = (typeof DEPARTMENTS)[number];

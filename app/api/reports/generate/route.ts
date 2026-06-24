@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
   await connectDB();
   try {
-    const report = await generateAndSendReport(reportType, department || undefined, user!._id.toString());
+     const report = await generateAndSendReport(reportType, department || undefined, user!._id.toString(), "current");
     return NextResponse.json({ success: true, report });
   } catch (err) {
     console.error("Report generation error:", err);

@@ -7,6 +7,7 @@ const FROM_EMAIL = process.env.EMAIL_FROM || "gloria.a@landbookbyharmony.com";
 
 interface SendEmailParams {
   to: string | string[];
+  cc?: string | string[];
   subject: string;
   html: string;
   text?: string;
@@ -22,6 +23,7 @@ export async function sendEmail(params: SendEmailParams) {
   try {
     await sgMail.send({
       to: params.to,
+      cc: params.cc,
       from: FROM_EMAIL,
       subject: params.subject,
       html: params.html,

@@ -143,18 +143,19 @@ function EmployeeDashboard({ data }: { data: EmployeeData }) {
         <div className="card-body">
           {data.dueKPIs.length === 0 ? (
             <EmptyState title="Nothing due" text="You're all caught up — no pending or in-progress KPIs right now." />
-          ) : (
+         ) : (
             <div className="dashboard-kpi-grid">
               {data.dueKPIs.map((kpi: DueKPI) => (
-                <div key={kpi._id} className="card">
+                <Link key={kpi._id} href={`/kpis/${kpi._id}`} className="card" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
                   <div className="card-body">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 8 }}>
                       <h5>{kpi.name}</h5>
                       <StatusBadge status={kpi.status} />
                     </div>
                     <p style={{ fontSize: "0.8125rem" }}>Target: {kpi.targetValue} · Due {formatDate(kpi.dueDate)}</p>
+                    <p style={{ fontSize: "0.75rem", color: "var(--color-primary)", marginTop: 6, fontWeight: 600 }}>Click to submit progress →</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

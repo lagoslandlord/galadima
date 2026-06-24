@@ -1,24 +1,19 @@
-import crypto from "crypto";
-
-/**
- * HMAC-SHA256 verification for incoming Freshworks webhooks.
- * Skipped outside production so local testing with curl/Postman is frictionless.
- * In production set FRESHWORKS_WEBHOOK_SECRET and configure each Freshworks
- * product to sign with the same secret, header: x-freshworks-signature
+/*
+ * Freshworks (Freshsales/Freshdesk/Freshservice) workflow webhooks can only
+ * send a fixed custom header value typed into their UI — they can't compute
+ * a dynamic HMAC signature of the payload. So this is a shared-secret
+ * comparison against a custom header, not a signature check.
  */
-export function verifyWebhookSignature(rawBody: string, signature: string | null): { ok: boolean; reason?: string } {
-  if (process.env.NODE_ENV !== "production") return { ok: true };
-
+export function verifyWebhookSignature(rawBody: string, providedSecret: string | null): { ok: boolean; reason?: string } {
   const secret = process.env.FRESHWORKS_WEBHOOK_SECRET;
+
   if (!secret) {
-    console.warn("[webhookAuth] FRESHWORKS_WEBHOOK_SECRET not set — skipping verification");
+    console.warn("[webhookAuth] FRESHWORKS_WEBHOOK_SECRET not set — accepting all webhooks unverified");
     return { ok: true };
   }
 
-  if (!signature) return { ok: false, reason: "Missing webhook signature" };
-
-  const expected = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
-  if (signature !== expected) return { ok: false, reason: "Invalid webhook signature" };
+  if (!providedSecret) return { ok: false, reason: "Missing x-webhook-secret header" };
+  if (providedSecret !== secret) return { ok: false, reason: "Invalid webhook secret" };
 
   return { ok: true };
 }

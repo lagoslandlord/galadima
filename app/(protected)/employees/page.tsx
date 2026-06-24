@@ -224,7 +224,7 @@ export default function EmployeesPage() {
               <tbody>
                 {employees.map((emp) => (
                   <tr key={emp._id}>
-                    <td><Link href={`/employees/${emp._id}`} style={{ fontWeight: 600, color: "var(--color-neutral-900)" }}>{emp.name}</Link></td>
+                    <td><Link href={`/employees/${emp._id}`} style={{ fontWeight: 600, color: "var(--color-info)" }}>{emp.name}</Link></td>
                     <td>{emp.employeeId}</td>
                     <td><RoleBadge role={emp.role} /></td>
                     <td>{emp.department}</td>

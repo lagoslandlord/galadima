@@ -14,6 +14,8 @@ interface Submission {
   employee: { name: string; employeeId: string };
   submittedValue: number;
   notes?: string;
+  evidenceUrls?: string[];
+  evidenceFileNames?: string[];
   submittedAt: string;
   status: string;
 }
@@ -110,6 +112,15 @@ export default function SubmissionsPage() {
                         {sub.employee.name} ({sub.employee.employeeId}) · Reported {sub.submittedValue} · {formatDate(sub.submittedAt)}
                       </p>
                       {sub.notes && <p style={{ fontSize: "0.875rem", color: "var(--color-neutral-600)", marginTop: 4 }}>{sub.notes}</p>}
+                          {(sub.evidenceUrls?.length ?? 0) > 0 && (
+                        <div style={{ marginTop: 6, display: "flex", flexDirection: "column", gap: 2 }}>
+                          {sub.evidenceUrls?.map((url, i) => (
+                          <a key={i} href={url} target="_blank" rel="noreferrer" style={{ fontSize: "0.8125rem", color: "var(--color-info)" }}>
+                              {sub.evidenceFileNames?.[i] || `Evidence ${i + 1}`}
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <StatusBadge status={sub.status} />
                   </div>
