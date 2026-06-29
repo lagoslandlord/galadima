@@ -10,8 +10,8 @@ import { formatDate } from "@/lib/constants";
 
 interface Submission {
   _id: string;
-  kpi: { _id: string; name: string };
-  employee: { name: string; employeeId: string };
+  kpi: { _id: string; name: string } | null;
+  employee: { name: string; employeeId: string } | null;
   submittedValue: number;
   notes?: string;
   evidenceUrls?: string[];
@@ -22,7 +22,7 @@ interface Submission {
 
 export default function SubmissionsPage() {
   const { role } = useAuth();
-    const canReview = role === "super_admin" || role === "department_head";
+  const canReview = role === "super_admin" || role === "department_head";
 
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,8 +84,8 @@ export default function SubmissionsPage() {
 
       <div className="filter-bar">
         <select
-        title="Filter"
-         className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
+          title="Filter"
+          className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">All statuses</option>
           <option value="pending_review">Pending Review</option>
           <option value="approved">Approved</option>
@@ -107,15 +107,21 @@ export default function SubmissionsPage() {
                 <div key={sub._id} style={{ padding: "16px 24px", borderBottom: "1px solid var(--color-neutral-100)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12, flexWrap: "wrap" }}>
                     <div>
-                      <Link href={`/kpis/${sub.kpi._id}`} style={{ fontWeight: 600, color: "var(--color-neutral-900)" }}>{sub.kpi.name}</Link>
+                      {sub.kpi ? (
+                        <Link href={`/kpis/${sub.kpi._id}`} style={{ fontWeight: 600, color: "var(--color-neutral-900)" }}>
+                          {sub.kpi.name}
+                        </Link>
+                      ) : (
+                        <span style={{ fontWeight: 600, color: "var(--color-neutral-500)" }}>KPI deleted</span>
+                      )}
                       <p style={{ fontSize: "0.8125rem", color: "var(--color-neutral-500)", marginTop: 2 }}>
-                        {sub.employee.name} ({sub.employee.employeeId}) · Reported {sub.submittedValue} · {formatDate(sub.submittedAt)}
+                        {sub.employee ? `${sub.employee.name} (${sub.employee.employeeId})` : "Unknown employee"} · Reported {sub.submittedValue} · {formatDate(sub.submittedAt)}
                       </p>
                       {sub.notes && <p style={{ fontSize: "0.875rem", color: "var(--color-neutral-600)", marginTop: 4 }}>{sub.notes}</p>}
-                          {(sub.evidenceUrls?.length ?? 0) > 0 && (
+                      {(sub.evidenceUrls?.length ?? 0) > 0 && (
                         <div style={{ marginTop: 6, display: "flex", flexDirection: "column", gap: 2 }}>
                           {sub.evidenceUrls?.map((url, i) => (
-                          <a key={i} href={url} target="_blank" rel="noreferrer" style={{ fontSize: "0.8125rem", color: "var(--color-info)" }}>
+                            <a key={i} href={url} target="_blank" rel="noreferrer" style={{ fontSize: "0.8125rem", color: "var(--color-info)" }}>
                               {sub.evidenceFileNames?.[i] || `Evidence ${i + 1}`}
                             </a>
                           ))}

@@ -34,11 +34,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const before = await User.findById(id);
   if (!before) return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
 
-  const allowedFields = ["name", "phone", "department", "isActive"];
+ const allowedFields = ["name", "email", "phone", "department", "isActive"];
   const sanitized: Record<string, unknown> = {};
   for (const field of allowedFields) {
     if (field in updates) sanitized[field] = updates[field];
   }
+  if (typeof sanitized.email === "string") {
+  const email = sanitized.email.toLowerCase().trim();
+  sanitized.email = email;
+
+  const existing = await User.findOne({ email, _id: { $ne: id } });
+  if (existing) {
+    return NextResponse.json({ success: false, error: "That email is already in use by another account" }, { status: 409 });
+  }
+}
 
   const target = await User.findByIdAndUpdate(id, sanitized, { new: true });
 

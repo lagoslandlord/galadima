@@ -21,12 +21,12 @@ type RawExcelRow = Record<string, string | number | boolean | null | undefined>;
 const TEMPLATES: Record<string, { headers: string[]; sample: Record<string, string> }> = {
   employees: {
     headers: ["Full Name", "Email", "Phone", "Role", "Department"],
-    sample: { "Full Name": "Jane Doe", Email: "jane@harmonygarden.com", Phone: "0801234567", Role: "Staff", Department: "Sales" },
+     sample: { "Full Name": "Jane Doe", Email: "jane@landbookbyharmony.com", Phone: "0801234567", Role: "Staff", Department: "Sales" },
   },
   kpis: {
     headers: ["Employee Email", "KPI Name", "Description", "Category", "Formula", "KPI Type", "Target Value", "Weight", "Due Date", "Evidence Required"],
     sample: {
-      "Employee Email": "jane@harmonygarden.com",
+      "Employee Email": "jane@landbookbyharmony.com",
       "KPI Name": "Sprint Completion",
       Description: "",
       Category: "productivity",
