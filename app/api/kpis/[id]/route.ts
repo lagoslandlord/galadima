@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import KPI from "@/lib/models/KPI";
+import Submission from "@/lib/models/Submission";
 import { requireAuth, requireRole } from "@/lib/authorize";
 import { createAuditLog } from "@/lib/audit";
 import { isKPIOverdue } from "@/lib/calculator";
@@ -74,6 +75,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const { kpi, allowed } = await loadAndAuthorize(id, user!);
   if (!kpi) return NextResponse.json({ success: false, error: "KPI not found" }, { status: 404 });
   if (!allowed) return NextResponse.json({ success: false, error: "Not authorized to delete this KPI" }, { status: 403 });
+
+  const submissionCount = await Submission.countDocuments({ kpi: id });
+  if (submissionCount > 0) {
+    return NextResponse.json(
+      { success: false, error: `This KPI has ${submissionCount} submission(s) on record. Archive it instead of deleting, to keep the history intact.` },
+      { status: 409 }
+    );
+  }
 
   const snapshot = kpi.toObject();
   await KPI.findByIdAndDelete(id);

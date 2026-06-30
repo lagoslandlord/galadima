@@ -165,39 +165,14 @@ export default function SubmissionsPage() {
                       flexWrap: "wrap",
                     }}
                   >
-                    <div>
+                   <div>
                       {sub.kpi ? (
-                        <Link
-                          href={`/kpis/${sub.kpi._id}`}
-                          style={{
-                            fontWeight: 600,
-                            color: "var(--color-neutral-900)",
-                          }}
-                        >
-                          {sub.kpi.name}
-                        </Link>
+                        <Link href={`/kpis/${sub.kpi._id}`} style={{ fontWeight: 600, color: "var(--color-neutral-900)" }}>{sub.kpi.name}</Link>
                       ) : (
-                        <span
-                          style={{
-                            fontWeight: 600,
-                            color: "var(--color-neutral-500)",
-                          }}
-                        >
-                          KPI deleted
-                        </span>
+                        <span style={{ fontWeight: 600, color: "var(--color-neutral-400)" }}>KPI no longer exists</span>
                       )}
-                      <p
-                        style={{
-                          fontSize: "0.8125rem",
-                          color: "var(--color-neutral-500)",
-                          marginTop: 2,
-                        }}
-                      >
-                        {sub.employee
-                          ? `${sub.employee.name} (${sub.employee.employeeId})`
-                          : "Unknown employee"}{" "}
-                        · Reported {sub.submittedValue} ·{" "}
-                        {formatDate(sub.submittedAt)}
+                      <p style={{ fontSize: "0.8125rem", color: "var(--color-neutral-500)", marginTop: 2 }}>
+                        {sub.employee ? `${sub.employee.name} (${sub.employee.employeeId})` : "Unknown employee"} · Reported {sub.submittedValue} · {formatDate(sub.submittedAt)}
                       </p>
                       {sub.notes && (
                         <p

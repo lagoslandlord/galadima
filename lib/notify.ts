@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import User from "@/lib/models/User";
-import type { IUser } from "@/lib/models/User";
+import User, { IUser } from "@/lib/models/User";
 import Notification from "@/lib/models/Notification";
 import PushSubscription from "@/lib/models/PushSubscription";
 import { createAuditLog } from "@/lib/audit";
 import { sendPushToSubscriptions } from "@/lib/webpush";
+import { sendEmail } from "@/lib/email";
 import { recipientQuery } from "@/lib/ruleEngine";
 import type { NotificationPriority, NotificationSource } from "@/lib/types";
 
@@ -43,7 +43,17 @@ function dedupe(users: IUser[]) {
   });
 }
 
-export async function notifyUser(userId: string, params: { title: string; message: string; priority: NotificationPriority; source: NotificationSource; eventType: string }) {
+export async function notifyUser(
+  userId: string,
+  params: {
+    title: string;
+    message: string;
+    priority: NotificationPriority;
+    source: NotificationSource;
+    eventType: string;
+    email?: { to: string; subject: string; html: string };
+  }
+) {
   const notification = await Notification.create({
     title: params.title,
     message: params.message,
@@ -58,6 +68,10 @@ export async function notifyUser(userId: string, params: { title: string; messag
 
   const subscriptions = await PushSubscription.find({ user: userId });
   await sendPushToSubscriptions(subscriptions, { title: params.title, body: params.message, priority: params.priority });
+
+  if (params.email) {
+    await sendEmail({ to: params.email.to, subject: params.email.subject, html: params.email.html });
+  }
 
   return notification;
 }

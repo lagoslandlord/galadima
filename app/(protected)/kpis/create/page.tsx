@@ -35,7 +35,7 @@ export default function CreateKpiPage() {
       Promise.resolve().then(() => setEmployees([]));
       return;
     }
-    fetch(`/api/users?department=${encodeURIComponent(form.department)}&role=staff`)
+    fetch(`/api/users?department=${encodeURIComponent(form.department)}`)
       .then((res) => res.json())
       .then((json) => json.success && setEmployees(json.users));
   }, [form.department]);

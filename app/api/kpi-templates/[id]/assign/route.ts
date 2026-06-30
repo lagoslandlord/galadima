@@ -77,6 +77,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     eventType: "kpi_assigned",
   });
 
+  await notifyUser(employee._id.toString(), {
+    title: "KPIs Assigned",
+    message: `${createdKPIs.length} new KPI(s) from "${template.name}" have been assigned to you.`,
+    priority: "Medium",
+    source: "KPMS",
+    eventType: "kpi_assigned",
+    email: {
+      to: employee.email,
+      subject: `${createdKPIs.length} New KPI(s) Assigned`,
+      html: `<p>Hello ${employee.name},</p><p>${createdKPIs.length} new KPI(s) from the template "${template.name}" have been assigned to you.</p><p>Log in to Galadima to view the full details and submit progress.</p>`,
+    },
+  });
+
   return NextResponse.json(
     { success: true, message: `${createdKPIs.length} KPI(s) assigned to ${employee.name}`, kpis: createdKPIs },
     { status: 201 }

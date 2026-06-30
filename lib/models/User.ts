@@ -47,9 +47,17 @@ interface IUserModel extends Model<IUser> {
 }
 
 UserSchema.statics.generateEmployeeId = async function (): Promise<string> {
-  const count = await this.countDocuments();
-  const padded = String(count + 1).padStart(4, "0");
-  return `HG-${padded}`;
+  // Random, not sequential — and checked against the database directly
+  // rather than derived from a count, so one failed insert can never cause
+  // the next one to collide too.
+  let id: string;
+  let exists = true;
+  do {
+    const random = Math.floor(1000 + Math.random() * 9000); // 1000–9999
+    id = `HG-${random}`;
+    exists = !!(await this.findOne({ employeeId: id }));
+  } while (exists);
+  return id;
 };
 
 const User = (mongoose.models.User as IUserModel) || mongoose.model<IUser, IUserModel>("User", UserSchema);

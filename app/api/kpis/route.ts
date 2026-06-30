@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import KPI from "@/lib/models/KPI";
+import User from "@/lib/models/User";
 import { requireAuth, requireRole } from "@/lib/authorize";
 import { createAuditLog } from "@/lib/audit";
 import { getKPIPeriod, isKPIOverdue } from "@/lib/calculator";
@@ -112,13 +113,21 @@ export async function POST(req: NextRequest) {
       newValue: { name: kpi.name, employee, targetValue, weight },
     });
 
-    await notifyUser(employee, {
-      title: "New KPI Assigned",
-      message: `"${kpi.name}" has been assigned to you, due ${new Date(kpi.dueDate).toLocaleDateString()}.`,
-      priority: "Medium",
-      source: "KPMS",
-      eventType: "kpi_assigned",
-    });
+    const employeeDoc = await User.findById(employee).select("name email");
+    if (employeeDoc) {
+      await notifyUser(employee, {
+        title: "New KPI Assigned",
+        message: `"${kpi.name}" has been assigned to you, due ${new Date(kpi.dueDate).toLocaleDateString()}.`,
+        priority: "Medium",
+        source: "KPMS",
+        eventType: "kpi_assigned",
+        email: {
+          to: employeeDoc.email,
+          subject: `New KPI Assigned: ${kpi.name}`,
+          html: `<p>Hello ${employeeDoc.name},</p><p>A new KPI has been assigned to you: <strong>${kpi.name}</strong>.</p><p>Target: ${kpi.targetValue} &middot; Due: ${new Date(kpi.dueDate).toLocaleDateString()}</p><p>Log in to Galadima to view the full details and submit progress.</p>`,
+        },
+      });
+    }
 
     return NextResponse.json({ success: true, kpi }, { status: 201 });
   } catch (err) {

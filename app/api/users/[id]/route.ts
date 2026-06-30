@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
+import KPI from "@/lib/models/KPI";
+import Appraisal from "@/lib/models/Appraisal";
 import { requireAuth, requireRole } from "@/lib/authorize";
 import { createAuditLog } from "@/lib/audit";
 
@@ -73,9 +75,20 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     return NextResponse.json({ success: false, error: "You cannot delete your own account" }, { status: 400 });
   }
 
-  await connectDB();
-  const target = await User.findByIdAndDelete(id);
+ await connectDB();
+  const target = await User.findById(id);
   if (!target) return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+
+  const kpiCount = await KPI.countDocuments({ employee: id });
+  const appraisalCount = await Appraisal.countDocuments({ employee: id });
+  if (kpiCount > 0 || appraisalCount > 0) {
+    return NextResponse.json(
+      { success: false, error: `${target.name} has performance history (${kpiCount} KPI(s), ${appraisalCount} appraisal(s)). Deactivate this account instead of deleting, to preserve their record.` },
+      { status: 409 }
+    );
+  }
+
+  await User.findByIdAndDelete(id);
 
   await createAuditLog({
     userId: user!._id.toString(),

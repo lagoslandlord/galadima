@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ROLE_LABELS } from "@/lib/constants";
 import StatCard from "@/components/StatCard";
-import { IconUsers, IconBuilding, IconFileCheck, IconHistory, IconMegaphone, IconUpload } from "@/components/icons";
+import { IconHistory, IconUpload } from "@/components/icons";
 
 export default function AdminPage() {
   const [stats, setStats] = useState({ totalUsers: 0, totalDepartments: 0, pendingSubmissions: 0, totalAuditEntries: 0 });
@@ -42,11 +42,7 @@ export default function AdminPage() {
     load();
   }, []);
 
-  const quickLinks = [
-    { href: "/employees", label: "Manage Employees", icon: IconUsers },
-    { href: "/departments", label: "Manage Departments", icon: IconBuilding },
-    { href: "/submissions", label: "Review Submissions", icon: IconFileCheck },
-    { href: "/broadcast", label: "Send Broadcast", icon: IconMegaphone },
+ const quickLinks = [
     { href: "/admin/import", label: "Bulk Import", icon: IconUpload },
     { href: "/audit", label: "View Audit Log", icon: IconHistory },
   ];

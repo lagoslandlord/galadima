@@ -91,8 +91,11 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (err) {
-    console.error("User create error:", err);
-    return NextResponse.json({ success: false, error: "Something went wrong" }, { status: 500 });
+ } catch (err) {
+  if (typeof err === "object" && err !== null && "code" in err && err.code === 11000) {
+    return NextResponse.json({ success: false, error: "Email already registered" }, { status: 409 });
   }
+  console.error("User create error:", err);
+  return NextResponse.json({ success: false, error: "Something went wrong" }, { status: 500 });
+}
 }
